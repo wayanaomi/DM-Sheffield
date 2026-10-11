@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
-    "@dm-sheffield/simulator": "^0.1.0",
+    "@dm-sheffield/simulator": "file:../../packages/simulator",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
