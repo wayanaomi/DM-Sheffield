@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "id": "hazop-loss-of-flow",
+  "title": "HAZOP deviation: loss of flow on pump discharge",
+  "description": "P-101 is running and delivering flow to V-102. Investigate an unplanned loss-of-flow event: acknowledge the alarm, inspect the equipment, identify the cause, and restore flow safely.",
+  "category": "hazop_deviation",
+  "learningObjectives": [
+    "Apply the HAZOP guide word 'No' (no flow) to a pump discharge line.",
+    "Use alarms and instrument readings to investigate a process deviation.",
+    "Take the correct corrective action (clear the trip, then restart) rather than guessing."
+  ],
+  "guideWords": ["No", "More", "Less", "As Well As", "Part Of", "Reverse", "Other Than"],
+  "seed": 7,
+  "timeStepMs": 100,
+  "timeLimitSeconds": 300,
+  "equipment": [
+    { "tag": "V-101", "type": "vessel", "label": "Suction Vessel", "level": 0.7, "crossSectionArea": 4, "capacity": 10, "basePressureBar": 1.1, "levelPressureGainBar": 0.3 },
+    { "tag": "MV-100", "type": "manual_valve", "label": "Suction Valve", "position": 1, "cv": 24 },
+    { "tag": "P-101", "type": "pump", "label": "Discharge Pump", "state": "on", "headBar": 3 },
+    { "tag": "MV-101", "type": "manual_valve", "label": "Discharge Valve", "position": 1, "cv": 24 },
+    { "tag": "V-102", "type": "vessel", "label": "Downstream Vessel", "level": 0.3, "crossSectionArea": 4, "capacity": 10, "basePressureBar": 1.0, "levelPressureGainBar": 0.3 }
+  ],
+  "connections": [
+    { "id": "LINE-1", "from": "V-101", "to": "P-101", "valve": "MV-100", "label": "Suction line" },
+    { "id": "LINE-2", "from": "P-101", "to": "V-102", "valve": "MV-101", "label": "Discharge line" }
+  ],
+  "instruments": [
+    { "tag": "FT-101", "type": "flow_transmitter", "label": "Discharge Flow", "measures": "LINE-2.flow", "drift": 0 },
+    { "tag": "PT-101", "type": "pressure_transmitter", "label": "Pump Discharge Pressure", "measures": "P-101.pressure", "drift": 0 },
+    { "tag": "LT-102", "type": "level_transmitter", "label": "Downstream Vessel Level", "measures": "V-102.level", "drift": 0 }
+  ],
+  "controllers": [],
+  "alarms": [
+    { "tag": "FAL-101", "label": "Discharge Flow Low", "source": "FT-101", "priority": "high", "condition": "low", "threshold": 2 }
+  ],
+  "events": [
+    { "id": "ev1", "at": 30, "type": "pump_trip", "target": "P-101", "description": "P-101 has tripped unexpectedly — investigate the loss of flow (HAZOP guide word: No)." }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "text": "Notice and acknowledge the low-flow alarm (FAL-101) within 60 seconds of it activating.",
+      "weight": 30,
+      "mode": "atLeastOnce",
+      "check": { "tag": "FAL-101", "property": "active", "op": "eq", "value": true },
+      "within": 90
+    },
+    {
+      "id": "t2",
+      "text": "Identify the cause, clear the trip, and restore discharge flow (FT-101 > 2) within 4 minutes.",
+      "weight": 70,
+      "mode": "atLeastOnce",
+      "check": { "tag": "FT-101", "property": "pv", "op": "gt", "value": 2 },
+      "within": 270
+    }
+  ],
+  "passMark": 70,
+  "completionFeedback": {
+    "onPass": "You correctly diagnosed the loss of flow as a pump trip, cleared it, and restored the discharge flow.",
+    "onFail": "Flow was not restored in time. Remember: a tripped pump must be cleared at the local panel before it can be restarted."
+  },
+  "safetyConstraints": [
+    "Do not attempt to restart the pump before clearing the trip — the simulator will block the start and log the reason."
+  ]
+}

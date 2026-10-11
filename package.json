@@ -1,43 +1,18 @@
 {
-  "name": "web",
-  "version": "0.1.0",
+  "name": "dm-sheffield-lms",
   "private": true,
+  "version": "0.1.0",
+  "description": "DM Sheffield Learning Management System monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "predev": "prisma generate --schema=prisma/schema.prisma",
-    "prebuild": "prisma generate --schema=prisma-postgres/schema.prisma",
-    "db:generate": "prisma generate --schema=prisma-postgres/schema.prisma",
-    "db:migrate": "prisma migrate deploy --schema=prisma-postgres/schema.prisma"
-  },
-  "dependencies": {
-    "@auth/prisma-adapter": "^2.11.3",
-    "@dm-sheffield/simulator": "file:../../packages/simulator",
-    "@prisma/client": "^5.22.0",
-    "bcryptjs": "^3.0.3",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.55.0",
-    "next": "16.4.0",
-    "next-auth": "^5.0.0-beta.32",
-    "otplib": "^13.5.0",
-    "prisma": "^5.22.0",
-    "qrcode": "^1.5.4",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "zod": "^3.25.76"
-  },
-  "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
-    "@types/qrcode": "^1.5.6",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.4.0",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=@dm-sheffield/simulator && npm run build --workspace=web",
+    "lint": "npm run lint --workspace=web",
+    "test": "npm test --workspace=@dm-sheffield/simulator",
+    "db:generate": "npm run db:generate --workspace=web",
+    "db:migrate": "npm run db:migrate --workspace=web"
   }
 }

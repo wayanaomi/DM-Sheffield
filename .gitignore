@@ -1,41 +1,34 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Build output
+/apps/web/.next/
+/packages/*/dist/
+*.tsbuildinfo
 
-# testing
-/coverage
+# Env files — never commit real secrets
+.env
+.env.local
+.env.*.local
+!.env.example
 
-# next.js
-/.next/
-/out/
+# SQLite local dev database
+/apps/web/prisma/dev.db
+/apps/web/prisma/dev.db-journal
 
-# production
-/build
-
-# misc
+# Misc
 .DS_Store
 *.pem
-
-# debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Local database backups — never commit
+/backups/
+*.db
+*.db-journal
+
+# Prisma schema backups created during database migration
+/apps/web/prisma-postgres/*.backup
+/apps/web/prisma-postgres/*.pre-neon.backup
+
+apps/web/prisma/dev.db

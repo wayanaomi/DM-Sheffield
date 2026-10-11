@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "id": "pump-vessel-fundamentals",
+  "title": "Pump and vessel fundamentals",
+  "description": "Trace the flow path between two vessels, inspect equipment, and move liquid from V-101 to V-102 by lining up valves and starting the transfer pump.",
+  "category": "fundamentals",
+  "learningObjectives": [
+    "Identify vessels, a pump, valves and instruments on a simple P&ID.",
+    "Understand how opening a valve and starting a pump establishes flow.",
+    "Relate valve position and pump state to the resulting process behaviour."
+  ],
+  "guideWords": [],
+  "seed": 1,
+  "timeStepMs": 100,
+  "timeLimitSeconds": 300,
+  "equipment": [
+    { "tag": "V-101", "type": "vessel", "label": "Feed Tank", "level": 0.8, "crossSectionArea": 4, "capacity": 12, "basePressureBar": 1.0, "levelPressureGainBar": 0.4 },
+    { "tag": "P-101", "type": "pump", "label": "Transfer Pump", "state": "off", "headBar": 2.5 },
+    { "tag": "MV-101", "type": "manual_valve", "label": "Suction Valve", "position": 1, "cv": 25 },
+    { "tag": "MV-102", "type": "manual_valve", "label": "Discharge Valve", "position": 0, "cv": 25 },
+    { "tag": "V-102", "type": "vessel", "label": "Receiving Tank", "level": 0.1, "crossSectionArea": 4, "capacity": 12, "basePressureBar": 1.0, "levelPressureGainBar": 0.4 }
+  ],
+  "connections": [
+    { "id": "LINE-1", "from": "V-101", "to": "P-101", "valve": "MV-101", "label": "Suction line" },
+    { "id": "LINE-2", "from": "P-101", "to": "V-102", "valve": "MV-102", "label": "Discharge line" }
+  ],
+  "instruments": [
+    { "tag": "LT-101", "type": "level_transmitter", "label": "Feed Tank Level", "measures": "V-101.level", "drift": 0 },
+    { "tag": "LT-102", "type": "level_transmitter", "label": "Receiving Tank Level", "measures": "V-102.level", "drift": 0 },
+    { "tag": "FT-101", "type": "flow_transmitter", "label": "Discharge Flow", "measures": "LINE-2.flow", "drift": 0 }
+  ],
+  "controllers": [],
+  "alarms": [],
+  "events": [],
+  "tasks": [
+    {
+      "id": "t1",
+      "text": "Line up the valves and start P-101 to establish flow (FT-101 > 0.5) within 2 minutes.",
+      "weight": 40,
+      "mode": "atLeastOnce",
+      "check": { "tag": "FT-101", "property": "pv", "op": "gt", "value": 0.5 },
+      "within": 120
+    },
+    {
+      "id": "t2",
+      "text": "Transfer liquid until the Receiving Tank (LT-102) reaches at least 30%.",
+      "weight": 60,
+      "mode": "atLeastOnce",
+      "check": { "tag": "LT-102", "property": "pv", "op": "gte", "value": 0.3 },
+      "within": 280
+    }
+  ],
+  "passMark": 70,
+  "completionFeedback": {
+    "onPass": "Well done — you traced the flow path and completed a pump transfer from V-101 to V-102.",
+    "onFail": "The transfer wasn't completed in time. Check that both valves are open and the pump is running, then try again."
+  },
+  "safetyConstraints": [
+    "Do not start the pump with both suction and discharge valves closed (dead-headed operation is unsafe in real plants)."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "id": "separator-level-control",
+  "title": "Separator level control",
+  "description": "Operate a level-controlled separator. Observe how LIC-101 compares the measured level (LT-101) against its setpoint and drives the discharge control valve LV-101, and respond when the transmitter develops a fault.",
+  "category": "level_control",
+  "learningObjectives": [
+    "Understand the relationship between inflow, outflow, measured level and controller output.",
+    "Compare automatic and manual controller modes.",
+    "Recognise high-level alarm and high-high trip behaviour."
+  ],
+  "guideWords": [],
+  "seed": 42,
+  "timeStepMs": 100,
+  "timeLimitSeconds": 240,
+  "equipment": [
+    { "tag": "V-101", "type": "vessel", "label": "Separator", "level": 0.5, "crossSectionArea": 5, "capacity": 10, "basePressureBar": 1.2, "levelPressureGainBar": 0.3 },
+    { "tag": "MV-100", "type": "manual_valve", "label": "Feed Valve", "position": 0.6, "cv": 22 },
+    { "tag": "LV-101", "type": "control_valve", "label": "Level Control Valve", "position": 0.4, "cv": 22, "mode": "auto" }
+  ],
+  "connections": [
+    { "id": "LINE-IN", "from": "ENV", "to": "V-101", "valve": "MV-100", "envPressureBar": 2.5, "label": "Feed from upstream" },
+    { "id": "LINE-OUT", "from": "V-101", "to": "ENV", "valve": "LV-101", "envPressureBar": 0, "label": "Discharge" }
+  ],
+  "instruments": [
+    { "tag": "LT-101", "type": "level_transmitter", "label": "Separator Level", "measures": "V-101.level", "drift": 0 }
+  ],
+  "controllers": [
+    { "tag": "LIC-101", "type": "pid_controller", "label": "Level Controller", "pv": "LT-101", "out": "LV-101", "sp": 0.5, "mode": "auto", "kp": 2.0, "ti": 30 }
+  ],
+  "alarms": [
+    { "tag": "LAH-101", "label": "Separator Level High", "source": "LT-101", "priority": "high", "condition": "high", "threshold": 0.8 },
+    {
+      "tag": "LAHH-101",
+      "label": "Separator Level High-High",
+      "source": "LT-101",
+      "priority": "critical",
+      "condition": "high_high",
+      "threshold": 0.92,
+      "tripAction": { "type": "close_valve", "target": "MV-100" }
+    }
+  ],
+  "events": [
+    { "id": "ev1", "at": 60, "type": "transmitter_fault", "target": "LT-101", "description": "LT-101 has failed and is now reading a frozen value." }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "text": "Return the level to 40-60% and hold it there for 20 seconds.",
+      "weight": 60,
+      "mode": "holdWithinWindow",
+      "check": { "tag": "LT-101", "property": "pv", "op": "between", "min": 0.4, "max": 0.6 },
+      "holdSeconds": 20,
+      "within": 180
+    },
+    {
+      "id": "t2",
+      "text": "Avoid a high-high level trip (never exceed 90%).",
+      "weight": 40,
+      "mode": "neverViolate",
+      "check": { "tag": "LT-101", "property": "pv", "op": "lte", "value": 0.9 }
+    }
+  ],
+  "passMark": 70,
+  "completionFeedback": {
+    "onPass": "The separator level was recovered and held within range without tripping — good control room practice.",
+    "onFail": "The level was not stabilised in time, or exceeded the safe range. Review how LIC-101 responded to the transmitter fault at t=60s."
+  },
+  "safetyConstraints": [
+    "If LT-101 fails, the automatic controller is operating on bad data — switch to manual and use other evidence before continuing."
+  ]
+}
