@@ -1,0 +1,248 @@
+import Link from "next/link";
+import {
+  Gauge,
+  ShieldCheck,
+  Workflow,
+  ClipboardCheck,
+  Building2,
+  ArrowRight,
+} from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { LinkButton } from "@/components/ui/button";
+import { CourseCard } from "@/components/courses/course-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getFeaturedCourses } from "@/lib/data/courses";
+import { CATEGORY_LABELS } from "@/lib/enums";
+
+export default async function HomePage() {
+  const featuredCourses = await getFeaturedCourses(6);
+
+  return (
+    <div>
+      {/* Hero */}
+      <section className="border-b border-border bg-gradient-to-b from-blue-50 to-white">
+        <Container className="grid gap-10 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <p className="font-tag text-xs font-semibold uppercase tracking-wider text-blue">
+              Engineering • Process Safety • Offshore Training
+            </p>
+            <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-navy sm:text-5xl">
+              Build the knowledge. Understand the process. Practise with purpose.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
+              Professional training in process safety, offshore safety, piping and
+              instrumentation design, and HAZOP, delivered through structured
+              courses and an interactive, physics-informed P&amp;ID simulator.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <LinkButton href="/training">
+                Explore Training <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+              <LinkButton href="/simulator" variant="secondary">
+                Experience the P&amp;ID Simulator
+              </LinkButton>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="rounded-lg border border-border bg-white p-6 shadow-sm">
+              <p className="font-tag text-xs font-semibold text-muted">LIVE PROCESS — V-101 SEPARATOR</p>
+              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                <div className="rounded-md border border-border bg-blue-50 p-3">
+                  <p className="font-tag text-[11px] text-muted">LT-101</p>
+                  <p className="mt-1 text-lg font-semibold text-navy">52%</p>
+                </div>
+                <div className="rounded-md border border-border bg-blue-50 p-3">
+                  <p className="font-tag text-[11px] text-muted">PT-101</p>
+                  <p className="mt-1 text-lg font-semibold text-navy">1.4 bar</p>
+                </div>
+                <div className="rounded-md border border-border bg-blue-50 p-3">
+                  <p className="font-tag text-[11px] text-muted">LIC-101</p>
+                  <p className="mt-1 text-lg font-semibold text-signal-normal">AUTO</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-muted">
+                A sample reading from the Separator Level Control scenario — operate
+                the real diagram in the simulator.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Approach */}
+      <section className="py-16">
+        <Container>
+          <SectionHeading
+            eyebrow="Our approach"
+            title="Training built around how engineers actually learn"
+            description="Reading a P&ID is different from operating one. DM Sheffield pairs structured course content with hands-on practice, so learners build judgement, not just familiarity."
+            align="center"
+          />
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+            {[
+              {
+                icon: Workflow,
+                title: "Structured courses",
+                body: "Video, PDF and written lessons organised into clear modules, with progress tracked lesson by lesson.",
+              },
+              {
+                icon: Gauge,
+                title: "Interactive simulation",
+                body: "Operate valves, pumps and controllers on a real P&ID and observe how the process actually responds.",
+              },
+              {
+                icon: ClipboardCheck,
+                title: "Completion certificates",
+                body: "Publicly verifiable certificates confirm course completion for your records and employer.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="rounded-lg border border-border p-6">
+                <item.icon className="h-6 w-6 text-blue" />
+                <h3 className="mt-4 text-base font-semibold text-navy">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Categories */}
+      <section className="bg-blue-50/40 py-16">
+        <Container>
+          <SectionHeading eyebrow="Training catalogue" title="Featured training categories" align="center" />
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+              <Link
+                key={key}
+                href={`/training?category=${key}`}
+                className="flex items-center justify-center rounded-lg border border-border bg-white px-4 py-6 text-center text-sm font-medium text-navy hover:border-blue hover:text-blue"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Simulator spotlight */}
+      <section className="py-16">
+        <Container className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="font-tag text-xs font-semibold uppercase tracking-wider text-blue">
+              The signature feature
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-navy sm:text-3xl">
+              Practise on a real, physics-informed P&amp;ID simulator
+            </h2>
+            <p className="mt-4 text-muted leading-relaxed">
+              Close a valve and watch flow stop. Start a pump and watch a vessel
+              fill. DM Sheffield&apos;s simulator runs a deterministic process model —
+              not animation — so every action has a traceable, explainable
+              consequence. Three starter scenarios cover pump and vessel
+              fundamentals, separator level control, and a HAZOP loss-of-flow
+              investigation.
+            </p>
+            <ul className="mt-6 space-y-2 text-sm text-ink">
+              {[
+                "Operate manual and control valves, pumps and controllers",
+                "Observe alarms, trips and instrument readings respond in real time",
+                "Review a complete run summary of objectives and actions",
+              ].map((line) => (
+                <li key={line} className="flex items-start gap-2">
+                  <ShieldCheck className="mt-0.5 h-4 w-4 flex-none text-blue" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8">
+              <LinkButton href="/simulator">Experience the simulator</LinkButton>
+            </div>
+          </div>
+          <div className="rounded-lg border border-border bg-navy p-6 text-white">
+            <p className="font-tag text-xs text-blue-100">SCENARIO 02 — SEPARATOR LEVEL CONTROL</p>
+            <div className="mt-6 flex items-center gap-6">
+              <div className="flex h-32 w-20 flex-col justify-end rounded border-2 border-white/40 p-1">
+                <div className="h-[52%] rounded-sm bg-blue-100/80" />
+              </div>
+              <div className="text-sm">
+                <p className="font-tag text-blue-100">LT-101</p>
+                <p className="text-2xl font-semibold">52.4%</p>
+                <p className="mt-3 font-tag text-blue-100">LIC-101 setpoint</p>
+                <p className="text-lg">50.0%</p>
+              </div>
+            </div>
+            <p className="mt-6 text-xs text-blue-100">
+              Educational simulation — simplified, deterministic process model.
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      {/* Catalogue preview */}
+      <section className="bg-blue-50/40 py-16">
+        <Container>
+          <div className="flex items-end justify-between gap-4">
+            <SectionHeading eyebrow="Start learning" title="Featured courses" />
+            <Link href="/training" className="hidden text-sm font-medium text-blue sm:block">
+              View all training →
+            </Link>
+          </div>
+          <div className="mt-8">
+            {featuredCourses.length === 0 ? (
+              <EmptyState
+                title="Training is being prepared"
+                description="DM Sheffield's course catalogue is being set up. Published courses will appear here as soon as they are available."
+                action={<LinkButton href="/contact" variant="secondary">Ask about upcoming training</LinkButton>}
+              />
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {featuredCourses.map((course) => (
+                  <CourseCard key={course.id} course={course} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      {/* Organisations */}
+      <section className="py-16">
+        <Container className="grid gap-10 rounded-lg border border-border bg-white p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <Building2 className="h-6 w-6 text-blue" />
+            <h2 className="mt-3 text-2xl font-semibold text-navy">
+              Training for teams and organisations
+            </h2>
+            <p className="mt-3 max-w-2xl text-muted leading-relaxed">
+              Assign courses to your workforce, track team progress, and keep a
+              record of completions and certificates across your organisation.
+              Contact us to discuss organisational training for your site or
+              contractor team.
+            </p>
+          </div>
+          <LinkButton href="/organisations" variant="secondary">
+            Organisational training
+          </LinkButton>
+        </Container>
+      </section>
+
+      {/* Final CTA */}
+      <section className="bg-navy py-16 text-white">
+        <Container className="flex flex-col items-center gap-6 text-center">
+          <h2 className="max-w-2xl text-2xl font-semibold sm:text-3xl">
+            Ready to build process safety competence that holds up under pressure?
+          </h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            <LinkButton href="/register" variant="primary" className="bg-white text-navy hover:bg-blue-50">
+              Create a free account
+            </LinkButton>
+            <LinkButton href="/training" variant="secondary" className="border-white/30 bg-transparent text-white hover:bg-white/10">
+              Browse training
+            </LinkButton>
+          </div>
+        </Container>
+      </section>
+    </div>
+  );
+}

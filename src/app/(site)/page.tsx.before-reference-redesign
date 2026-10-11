@@ -1,0 +1,442 @@
+import Link from "next/link";
+import Image from "next/image";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Workflow,
+  Gauge,
+  ClipboardCheck,
+  Building2,
+  BookOpenCheck,
+  Activity,
+} from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { LinkButton } from "@/components/ui/button";
+import { CourseCard } from "@/components/courses/course-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { getFeaturedCourses } from "@/lib/data/courses";
+import { CATEGORY_LABELS } from "@/lib/enums";
+
+const programmes = [
+  {
+    number: "01",
+    title: "Offshore safety",
+    description:
+      "Build foundational knowledge of offshore environments, hazards, emergency procedures and safety practices.",
+    tag: "SAFETY",
+    href: "/training",
+  },
+  {
+    number: "02",
+    title: "Process safety & HAZOP",
+    description:
+      "Explore process hazards, deviation analysis, safeguards and the principles behind safer operations.",
+    tag: "PROCESS",
+    href: "/training",
+  },
+  {
+    number: "03",
+    title: "Piping & instrumentation",
+    description:
+      "Understand P&ID symbols, process lines, valves, instruments and the systems that connect them.",
+    tag: "ENGINEERING",
+    href: "/training",
+  },
+];
+
+export default async function HomePage() {
+  const featuredCourses = await getFeaturedCourses(6);
+
+  return (
+    <div className="bg-white text-navy">
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-border bg-white">
+        <div className="absolute inset-x-0 top-0 h-1 bg-blue" />
+        <Container className="grid gap-10 py-14 sm:py-20 lg:min-h-[650px] lg:grid-cols-[1.04fr_0.96fr] lg:items-center lg:gap-14">
+          <div className="relative z-10">
+            <p className="flex items-center gap-3 font-tag text-xs font-semibold uppercase tracking-[0.18em] text-blue">
+              <span className="h-px w-8 bg-blue" />
+              DM Sheffield · Technical Learning
+            </p>
+
+            <h1 className="mt-7 max-w-2xl text-4xl font-semibold leading-[1.12] tracking-tight text-navy sm:text-5xl lg:text-[3.65rem]">
+              Develop the skills.
+              <span className="mt-1 block text-blue">
+                Understand the process.
+              </span>
+            </h1>
+
+            <p className="mt-6 max-w-xl text-base leading-8 text-muted sm:text-lg">
+              Professional learning in offshore safety, process safety, piping
+              and instrumentation — supported by structured courses and an
+              interactive P&amp;ID simulator built for practical understanding.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <LinkButton href="/training">
+                Explore training <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+              <LinkButton href="/simulator" variant="secondary">
+                Discover the simulator
+              </LinkButton>
+            </div>
+
+            <div className="mt-11 grid max-w-xl grid-cols-3 border-t border-border pt-6">
+              <div className="pr-3">
+                <ShieldCheck className="h-5 w-5 text-blue" />
+                <p className="mt-3 text-sm font-semibold">Safety focused</p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  Industry-relevant learning
+                </p>
+              </div>
+              <div className="border-l border-border px-4">
+                <BookOpenCheck className="h-5 w-5 text-blue" />
+                <p className="mt-3 text-sm font-semibold">Structured</p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  Learn step by step
+                </p>
+              </div>
+              <div className="border-l border-border pl-4">
+                <Activity className="h-5 w-5 text-blue" />
+                <p className="mt-3 text-sm font-semibold">Practical</p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  Explore process behaviour
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-[510px] lg:max-w-none">
+            <div className="absolute right-0 top-8 h-[80%] w-[82%] bg-blue-50" />
+            <div className="relative overflow-hidden border border-border bg-blue-50">
+              <Image
+                src="/images/dm-sheffield-portrait.png"
+                alt="Professional portrait for DM Sheffield technical training"
+                className="h-[430px] w-full object-cover object-top sm:h-[530px] lg:h-[550px]"
+                fetchPriority="high"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy/90 via-navy/40 to-transparent px-6 pb-6 pt-24 text-white">
+                <p className="font-tag text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">
+                  Knowledge · Competence · Practice
+                </p>
+                <p className="mt-3 max-w-sm text-2xl font-semibold leading-snug">
+                  Preparing professionals for real process challenges.
+                </p>
+              </div>
+            </div>
+            <div className="relative ml-auto mt-4 flex max-w-[360px] items-center gap-3 border border-border bg-white p-4">
+              <div className="flex h-11 w-11 flex-none items-center justify-center bg-blue-50 text-blue">
+                <Gauge className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Go beyond the lesson</p>
+                <p className="mt-1 text-xs leading-5 text-muted">
+                  Connect engineering theory with process simulation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* TRAINING PROGRAMMES */}
+      <section className="py-16 sm:py-20">
+        <Container>
+          <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <div>
+              <p className="font-tag text-xs font-semibold uppercase tracking-[0.18em] text-blue">
+                Training programmes
+              </p>
+              <h2 className="mt-4 max-w-lg text-3xl font-semibold leading-tight tracking-tight text-navy sm:text-4xl">
+                Build capability that connects to the work.
+              </h2>
+            </div>
+            <p className="max-w-2xl leading-7 text-muted lg:justify-self-end">
+              Explore technical learning across safety, process engineering and
+              instrumentation. Progress from foundational knowledge towards a
+              clearer understanding of how industrial systems operate.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-px border border-border bg-border md:grid-cols-3">
+            {programmes.map((programme) => (
+              <Link
+                key={programme.number}
+                href={programme.href}
+                className="group flex min-h-[255px] flex-col bg-white p-6 transition-colors hover:bg-blue-50/60 sm:p-8"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-tag text-xs font-semibold tracking-widest text-blue">
+                    {programme.number}
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-muted transition-transform group-hover:translate-x-1 group-hover:text-blue" />
+                </div>
+                <p className="mt-8 font-tag text-[10px] font-semibold tracking-[0.16em] text-muted">
+                  {programme.tag}
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-navy">
+                  {programme.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-muted">
+                  {programme.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-6 text-right">
+            <Link
+              href="/training"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-blue hover:underline"
+            >
+              Browse the training catalogue <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </Container>
+      </section>
+
+      {/* LEARNING APPROACH */}
+      <section className="border-y border-border bg-blue-50/50 py-16 sm:py-20">
+        <Container>
+          <SectionHeading
+            eyebrow="A connected learning experience"
+            title="Learn it. Understand it. Put it into practice."
+            description="DM Sheffield brings technical course material and process simulation together, helping learners connect concepts with the behaviour of industrial systems."
+            align="center"
+          />
+
+          <div className="mt-12 grid gap-8 sm:grid-cols-3">
+            {[
+              {
+                icon: Workflow,
+                number: "01",
+                title: "Structured learning",
+                body: "Work through organised lessons and course materials, with progress tracked as you learn.",
+              },
+              {
+                icon: Gauge,
+                number: "02",
+                title: "Interactive simulation",
+                body: "Explore a P&ID, operate valves and pumps, and observe how changes affect process behaviour.",
+              },
+              {
+                icon: ClipboardCheck,
+                number: "03",
+                title: "Completion records",
+                body: "Access course completion records and certificates for your professional learning.",
+              },
+            ].map((item) => (
+              <div key={item.number} className="border-t-2 border-blue bg-white p-6 sm:p-7">
+                <div className="flex items-center justify-between">
+                  <item.icon className="h-6 w-6 text-blue" />
+                  <span className="font-tag text-xs text-muted">{item.number}</span>
+                </div>
+                <h3 className="mt-6 text-lg font-semibold text-navy">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-muted">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* P&ID SIMULATOR */}
+      <section className="py-16 sm:py-20">
+        <Container className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="font-tag text-xs font-semibold uppercase tracking-[0.18em] text-blue">
+              Practical process understanding
+            </p>
+            <h2 className="mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-tight text-navy sm:text-4xl">
+              Understand what happens when a process changes.
+            </h2>
+            <p className="mt-5 max-w-xl leading-7 text-muted">
+              Reading a piping and instrumentation diagram is only the
+              beginning. The DM Sheffield simulator is designed to let learners
+              explore process scenarios and see how actions such as closing a
+              valve affect flow.
+            </p>
+            <ul className="mt-6 space-y-4 text-sm text-ink">
+              {[
+                "Explore instruments, valves and process connections.",
+                "Observe flow and vessel behaviour as operating conditions change.",
+                "Review the actions taken during a simulation run.",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 h-5 w-5 flex-none text-blue" />
+                  <span className="leading-6">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8">
+              <LinkButton href="/simulator">
+                Explore the P&amp;ID simulator <ArrowRight className="h-4 w-4" />
+              </LinkButton>
+            </div>
+          </div>
+
+          <div className="border border-border bg-white p-5 sm:p-8">
+            <div className="flex items-center justify-between border-b border-border pb-4">
+              <div>
+                <p className="font-tag text-[10px] font-semibold uppercase tracking-[0.16em] text-blue">
+                  Illustrative process scenario
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-navy">
+                  Separator level control
+                </h3>
+              </div>
+              <Activity className="h-6 w-6 text-blue" />
+            </div>
+
+            <div className="mt-7 grid grid-cols-[100px_1fr] items-center gap-6 sm:grid-cols-[130px_1fr]">
+              <div className="relative mx-auto flex h-44 w-20 items-end overflow-hidden border-2 border-navy/60 bg-blue-50 sm:w-24">
+                <div className="w-full bg-blue-300/80" style={{ height: "52%" }} />
+                <div className="absolute inset-x-0 top-1/2 border-t border-dashed border-blue-700/60" />
+              </div>
+              <div className="space-y-5">
+                <div className="border-b border-border pb-3">
+                  <p className="font-tag text-[10px] tracking-wider text-muted">LT-101 · LEVEL</p>
+                  <p className="mt-1 text-2xl font-semibold text-navy">52.4%</p>
+                </div>
+                <div className="border-b border-border pb-3">
+                  <p className="font-tag text-[10px] tracking-wider text-muted">LIC-101 · SETPOINT</p>
+                  <p className="mt-1 text-2xl font-semibold text-navy">50.0%</p>
+                </div>
+                <div>
+                  <p className="font-tag text-[10px] tracking-wider text-muted">CONTROL MODE</p>
+                  <p className="mt-1 text-sm font-semibold text-blue">Automatic</p>
+                </div>
+              </div>
+            </div>
+            <p className="mt-6 border-t border-border pt-4 text-xs leading-5 text-muted">
+              Illustrative values for a simplified educational scenario. Use
+              the simulator to interact with the available process model.
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      {/* CATEGORIES */}
+      <section className="border-y border-border bg-blue-50/50 py-16">
+        <Container>
+          <SectionHeading
+            eyebrow="Explore by discipline"
+            title="Find your area of learning"
+            align="center"
+          />
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+              <Link
+                key={key}
+                href={`/training?category=${encodeURIComponent(key)}`}
+                className="group flex min-h-24 items-center justify-between gap-3 border border-border bg-white p-4 text-sm font-medium text-navy transition-colors hover:border-blue hover:text-blue"
+              >
+                <span>{label}</span>
+                <ArrowRight className="h-4 w-4 flex-none text-muted group-hover:text-blue" />
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* COURSE CATALOGUE */}
+      <section className="py-16 sm:py-20">
+        <Container>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <SectionHeading
+              eyebrow="Continue your development"
+              title="Explore available courses"
+              description="Browse the courses published in the DM Sheffield learning catalogue."
+            />
+            <Link
+              href="/training"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-blue hover:underline"
+            >
+              View all courses <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-9">
+            {featuredCourses.length === 0 ? (
+              <EmptyState
+                title="Training catalogue coming together"
+                description="New courses will appear here when they are published. Visit the training catalogue or contact DM Sheffield for information."
+                action={
+                  <LinkButton href="/contact" variant="secondary">
+                    Enquire about training
+                  </LinkButton>
+                }
+              />
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {featuredCourses.map((course) => (
+                  <CourseCard key={course.id} course={course} />
+                ))}
+              </div>
+            )}
+          </div>
+        </Container>
+      </section>
+
+      {/* ORGANISATIONS */}
+      <section className="border-y border-border bg-blue-50/50 py-16">
+        <Container className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="max-w-2xl">
+            <Building2 className="h-7 w-7 text-blue" />
+            <p className="mt-5 font-tag text-xs font-semibold uppercase tracking-[0.16em] text-blue">
+              For organisations
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-navy">
+              Develop the capability of your workforce.
+            </h2>
+            <p className="mt-4 leading-7 text-muted">
+              Support workforce development with structured learning,
+              course-completion records and practical process scenarios.
+              Contact DM Sheffield to discuss training requirements for your
+              team.
+            </p>
+          </div>
+          <LinkButton href="/organisations" variant="secondary">
+            Organisational training <ArrowRight className="h-4 w-4" />
+          </LinkButton>
+        </Container>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="bg-navy py-16 text-white sm:py-20">
+        <Container className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div>
+            <p className="font-tag text-xs font-semibold uppercase tracking-[0.18em] text-blue-100">
+              Take the next step
+            </p>
+            <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+              Build your technical knowledge with DM Sheffield.
+            </h2>
+            <p className="mt-4 max-w-xl leading-7 text-blue-100">
+              Explore the training catalogue and discover a more practical way
+              to understand process systems.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 sm:flex-col">
+            <LinkButton
+              href="/register"
+              variant="primary"
+              className="bg-white text-navy hover:bg-blue-50"
+            >
+              Get started <ArrowRight className="h-4 w-4" />
+            </LinkButton>
+            <LinkButton
+              href="/training"
+              variant="secondary"
+              className="border-white/30 bg-transparent text-white hover:bg-white/10"
+            >
+              Browse training
+            </LinkButton>
+          </div>
+        </Container>
+      </section>
+    </div>
+  );
+}

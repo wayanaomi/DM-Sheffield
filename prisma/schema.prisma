@@ -1,0 +1,468 @@
+// DM Sheffield LMS — Prisma schema
+//
+// Local/sandbox development uses SQLite (provider below) because this
+// environment has no PostgreSQL server or Docker available. The documented
+// production system of record is PostgreSQL (see docs/SETUP.md and
+// docs/DATA_MODEL.md for the exact fields to change when deploying).
+//
+// Because SQLite has no native enum or UUID type, "enum-like" fields are
+// plain String columns whose allowed values are validated in the application
+// layer (src/lib/enums.ts) with Zod — this keeps one schema file portable to
+// both engines. IDs use Prisma's cuid() rather than Postgres-native UUIDs for
+// the same reason; switch to @db.Uuid + gen_random_uuid() in production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Accounts and access
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  name          String
+  /// learner | instructor | org_manager | admin | support
+  role          String    @default("learner")
+  /// active | disabled | pending_verification
+  status        String    @default("pending_verification")
+  locale        String    @default("en")
+  timezone      String    @default("Africa/Lagos")
+  emailVerified DateTime?
+  mfaEnabled    Boolean   @default(false)
+  mfaSecret     String?
+  image         String?
+  failedLoginAttempts Int @default(0)
+  lastFailedLoginAt   DateTime?
+  lockedUntil         DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts            Account[]
+  sessions            Session[]
+  memberships         Membership[]
+  coursesAuthored     Course[]             @relation("CourseAuthor")
+  enrollments         Enrollment[]
+  attempts            Attempt[]
+  orders              Order[]
+  certificates        Certificate[]
+  simulationAttempts  SimulationAttempt[]
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Organisation {
+  id        String   @id @default(cuid())
+  name      String
+  seats     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+}
+
+model Membership {
+  id             String   @id @default(cuid())
+  userId         String
+  organisationId String
+  /// member | manager
+  role           String   @default("member")
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organisationId])
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue and course delivery
+// ---------------------------------------------------------------------------
+
+model Course {
+  id                     String   @id @default(cuid())
+  slug                   String   @unique
+  title                  String
+  summary                String
+  description            String   @default("")
+  /// offshore_safety | process_safety | piping | instrumentation | hazop_risk
+  category               String
+  /// beginner | intermediate | advanced
+  level                  String   @default("beginner")
+  priceMinor             Int      @default(0)
+  currency               String   @default("NGN")
+  isFree                 Boolean  @default(true)
+  /// draft | review | published
+  status                 String   @default("draft")
+  certificateEnabled     Boolean  @default(true)
+  certificateValidMonths Int?
+  sequentialUnlock       Boolean  @default(true)
+  /// if true, certificate issuance requires passing required assessments; if false (default,
+  /// per the client's later decision to remove formal grading) completion alone is sufficient.
+  requireAssessmentPass  Boolean  @default(false)
+  createdById            String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  createdBy   User         @relation("CourseAuthor", fields: [createdById], references: [id])
+  modules     Module[]
+  enrollments Enrollment[]
+  orderItems  OrderItem[]
+
+  @@index([category])
+  @@index([status])
+}
+
+model Module {
+  id       String @id @default(cuid())
+  courseId String
+  title    String
+  order    Int
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id                   String  @id @default(cuid())
+  moduleId             String
+  title                String
+  /// video | pdf | rich_text | quiz | simulation
+  type                 String
+  order                Int
+  required             Boolean @default(true)
+  completionThreshold  Float   @default(0.9)
+  content              String  @default("")
+  assetId              String?
+  scenarioKey          String?
+  assessmentId         String?
+
+  module       Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  asset        Asset?        @relation(fields: [assetId], references: [id])
+  assessment   Assessment?   @relation(fields: [assessmentId], references: [id])
+  progress     LessonProgress[]
+
+  @@index([moduleId])
+}
+
+model Asset {
+  id               String   @id @default(cuid())
+  /// video | pdf | image
+  type             String
+  storageKey       String
+  originalName     String
+  mimeType         String
+  sizeBytes        Int
+  durationSeconds  Int?
+  /// pending | processing | ready | failed
+  processingStatus String   @default("pending")
+  checksum         String?
+  createdAt        DateTime @default(now())
+
+  lessons Lesson[]
+}
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String
+  /// free | purchase | assignment
+  source      String
+  /// active | completed | revoked
+  status      String    @default("active")
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+  certificate Certificate?
+
+  @@unique([userId, courseId])
+  @@index([userId])
+}
+
+model LessonProgress {
+  id                  String    @id @default(cuid())
+  enrollmentId        String
+  lessonId            String
+  percent             Float     @default(0)
+  lastPositionSeconds Int       @default(0)
+  completedAt         DateTime?
+  updatedAt           DateTime  @updatedAt
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, lessonId])
+}
+
+// ---------------------------------------------------------------------------
+// Assessments (formative feedback — see docs/DECISIONS.md: grading was
+// removed from the formal certification workflow by later client decision;
+// scoring is retained here for learner feedback only).
+// ---------------------------------------------------------------------------
+
+model Assessment {
+  id               String  @id @default(cuid())
+  courseId         String
+  /// lesson_quiz | module_test | final_exam
+  type             String
+  timeLimitSeconds Int?
+  maxAttempts      Int     @default(3)
+  passMark         Float   @default(70)
+  shuffleQuestions Boolean @default(true)
+  /// never | after_pass | always
+  showAnswers      String  @default("after_pass")
+
+  questions Question[]
+  attempts  Attempt[]
+  lessons   Lesson[]
+}
+
+model Question {
+  id            String @id @default(cuid())
+  assessmentId  String
+  /// single_choice | multiple_choice | true_false | matching | numeric
+  type          String
+  prompt        String
+  optionsJson   String @default("[]")
+  correctJson   String
+  tolerance     Float?
+  tagsJson      String @default("[]")
+  version       Int    @default(1)
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+model Attempt {
+  id           String    @id @default(cuid())
+  assessmentId String
+  userId       String
+  startedAt    DateTime  @default(now())
+  expiresAt    DateTime?
+  submittedAt  DateTime?
+  score        Float?
+  passed       Boolean?
+  answersJson  String    @default("{}")
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, assessmentId])
+}
+
+// ---------------------------------------------------------------------------
+// Payments and orders
+// ---------------------------------------------------------------------------
+
+model Order {
+  id               String   @id @default(cuid())
+  userId           String
+  /// pending | paid | failed | refunded
+  status           String   @default("pending")
+  totalMinor       Int
+  currency         String   @default("NGN")
+  /// paystack | flutterwave | dev
+  gateway          String   @default("dev")
+  gatewayReference String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items    OrderItem[]
+  payments Payment[]
+}
+
+model OrderItem {
+  id         String @id @default(cuid())
+  orderId    String
+  courseId   String
+  priceMinor Int
+  currency   String
+
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id])
+}
+
+model Payment {
+  id            String    @id @default(cuid())
+  orderId       String
+  gatewayEventId String   @unique
+  /// pending | verified | failed
+  status        String    @default("pending")
+  amountMinor   Int
+  currency      String
+  rawPayloadJson String   @default("{}")
+  verifiedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// Certificates
+// ---------------------------------------------------------------------------
+
+model Certificate {
+  id             String    @id @default(cuid())
+  publicId       String    @unique
+  enrollmentId   String    @unique
+  issuedAt       DateTime  @default(now())
+  expiresAt      DateTime?
+  revokedAt      DateTime?
+  pdfStorageKey  String?
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+}
+
+// ---------------------------------------------------------------------------
+// P&ID simulator scenarios and attempts
+// ---------------------------------------------------------------------------
+
+model SimulationScenario {
+  id          String   @id @default(cuid())
+  scenarioKey String   @unique
+  title       String
+  /// draft | published
+  status      String   @default("published")
+  createdAt   DateTime @default(now())
+
+  versions SimulationScenarioVersion[]
+  attempts SimulationAttempt[]
+}
+
+model SimulationScenarioVersion {
+  id          String   @id @default(cuid())
+  scenarioId  String
+  version     Int
+  schemaJson  String
+  createdAt   DateTime @default(now())
+
+  scenario SimulationScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  attempts SimulationAttempt[]
+
+  @@unique([scenarioId, version])
+}
+
+model SimulationAttempt {
+  id                String    @id @default(cuid())
+  userId            String
+  scenarioId        String
+  scenarioVersionId String
+  seed              Int
+  actionLogJson     String    @default("[]")
+  score             Int       @default(0)
+  passed            Boolean   @default(false)
+  complete          Boolean   @default(false)
+  durationMs        Int       @default(0)
+  startedAt         DateTime  @default(now())
+  completedAt       DateTime?
+
+  user           User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenario       SimulationScenario        @relation(fields: [scenarioId], references: [id])
+  scenarioVersion SimulationScenarioVersion @relation(fields: [scenarioVersionId], references: [id])
+
+  @@index([userId, scenarioId])
+}
+
+// ---------------------------------------------------------------------------
+// Audit and notifications
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  beforeJson String?
+  afterJson  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  payloadJson String @default("{}")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  organisation String?
+  message   String
+  /// new | reviewed
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}

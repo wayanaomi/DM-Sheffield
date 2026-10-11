@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/*
+ * DM Sheffield design tokens.
+ * Direction (per client meeting, 9 Oct 2026): white background, blue text,
+ * one colour family in varied shades rather than bright, busy colours —
+ * overriding the PRD's earlier, brighter process-safety theme. Yellow and a
+ * touch of red are reserved for brand accents and engineering signal colours
+ * (alarms, instrument states), never for decoration. See docs/DESIGN_SYSTEM.md.
+ */
+:root {
+  --color-white: #ffffff;
+  --color-navy: #10233f;
+  --color-navy-700: #163357;
+  --color-blue: #1f5fae;
+  --color-blue-600: #1a4f94;
+  --color-blue-100: #eaf2fb;
+  --color-blue-50: #f5f9fd;
+  --color-ink: #172b45;
+  --color-muted: #5b6b81;
+  --color-border: #dce4ee;
+
+  /* Brand accents — used sparingly (eyebrow labels, badges, CTAs), not as a palette. */
+  --color-accent-yellow: #c98a12;
+  --color-accent-yellow-bg: #fdf3e0;
+  --color-accent-red: #b3261e;
+  --color-accent-red-bg: #fbeceb;
+
+  /* Engineering / simulator signal colours — convey process & alarm state. */
+  --color-signal-normal: #1f7a4d;
+  --color-signal-caution: #c98a12;
+  --color-signal-alarm: #b3261e;
+  --color-signal-critical: #7a1813;
+  --color-signal-offline: #8b96a6;
+
+  --font-sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+@theme inline {
+  --color-white: var(--color-white);
+  --color-navy: var(--color-navy);
+  --color-navy-700: var(--color-navy-700);
+  --color-blue: var(--color-blue);
+  --color-blue-600: var(--color-blue-600);
+  --color-blue-100: var(--color-blue-100);
+  --color-blue-50: var(--color-blue-50);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-accent-yellow: var(--color-accent-yellow);
+  --color-accent-yellow-bg: var(--color-accent-yellow-bg);
+  --color-accent-red: var(--color-accent-red);
+  --color-accent-red-bg: var(--color-accent-red-bg);
+  --color-signal-normal: var(--color-signal-normal);
+  --color-signal-caution: var(--color-signal-caution);
+  --color-signal-alarm: var(--color-signal-alarm);
+  --color-signal-critical: var(--color-signal-critical);
+  --color-signal-offline: var(--color-signal-offline);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}
+
+body {
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.font-tag {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

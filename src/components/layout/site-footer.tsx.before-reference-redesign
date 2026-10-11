@@ -1,0 +1,74 @@
+import Link from "next/link";
+import { Container } from "@/components/ui/container";
+import { Logo } from "./logo";
+
+const columns = [
+  {
+    heading: "Training",
+    links: [
+      { href: "/training?category=offshore_safety", label: "Offshore Safety" },
+      { href: "/training?category=process_safety", label: "Process Safety" },
+      { href: "/training?category=piping", label: "Piping" },
+      { href: "/training?category=instrumentation", label: "Instrumentation" },
+      { href: "/training?category=hazop_risk", label: "HAZOP and Risk" },
+    ],
+  },
+  {
+    heading: "Platform",
+    links: [
+      { href: "/simulator", label: "P&ID Simulator" },
+      { href: "/organisations", label: "Organisational training" },
+      { href: "/certificates/verify", label: "Verify a certificate" },
+      { href: "/about", label: "About DM Sheffield" },
+    ],
+  },
+  {
+    heading: "Legal",
+    links: [
+      { href: "/legal/privacy", label: "Privacy policy" },
+      { href: "/legal/terms", label: "Terms of service" },
+      { href: "/contact", label: "Contact us" },
+    ],
+  },
+];
+
+export function SiteFooter() {
+  return (
+    <footer className="border-t border-border bg-blue-50/40">
+      <Container className="py-12">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
+          <div className="col-span-2">
+            <Logo />
+            <p className="mt-3 max-w-xs text-sm text-muted leading-relaxed">
+              Professional training in process safety, offshore safety, piping and
+              instrumentation design and HAZOP, built around practical, interactive
+              learning.
+            </p>
+          </div>
+          {columns.map((col) => (
+            <div key={col.heading}>
+              <h3 className="text-sm font-semibold text-navy">{col.heading}</h3>
+              <ul className="mt-3 space-y-2">
+                {col.links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-sm text-muted hover:text-blue">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} DM Sheffield. All rights reserved.</p>
+          <p>
+            Online training and completion certificates. DM Sheffield does not claim
+            OPITO accreditation; BOSIET preparation here does not replace required
+            practical, in-person survival training.
+          </p>
+        </div>
+      </Container>
+    </footer>
+  );
+}
