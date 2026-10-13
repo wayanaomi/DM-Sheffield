@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import { Logo } from "./logo";
@@ -44,10 +45,11 @@ export async function SiteHeader() {
               <LinkButton
                 href="/dashboard"
                 variant="secondary"
-                className="border-white bg-white text-blue hover:bg-blue-50"
+                className="!border-white !bg-white !text-blue hover:!bg-blue-50"
               >
                 Dashboard
               </LinkButton>
+
               <form
                 action={async () => {
                   "use server";
@@ -56,7 +58,7 @@ export async function SiteHeader() {
               >
                 <button
                   type="submit"
-                  className="px-2 py-2 text-sm text-white hover:underline"
+                  className="px-2 py-2 text-sm font-semibold text-white hover:underline"
                 >
                   Sign out
                 </button>
@@ -67,13 +69,14 @@ export async function SiteHeader() {
               <LinkButton
                 href="/sign-in"
                 variant="secondary"
-                className="hidden border-white bg-transparent text-white hover:bg-white/10 sm:inline-flex"
+                className="!inline-flex !border-white !bg-blue !text-white hover:!bg-blue-800"
               >
                 Sign in
               </LinkButton>
+
               <LinkButton
                 href="/register"
-                className="border border-white bg-white text-blue hover:bg-blue-50"
+                className="!inline-flex !border-white !bg-white !text-blue hover:!bg-blue-50"
               >
                 Get started
               </LinkButton>
