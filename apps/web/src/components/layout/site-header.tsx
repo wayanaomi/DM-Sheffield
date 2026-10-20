@@ -19,10 +19,12 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-blue-700 bg-blue text-white shadow-sm">
       <Container className="flex min-h-20 items-center justify-between gap-3 sm:gap-5">
-        <Logo
-          size="compact"
-          className="rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-        />
+        <div className="inline-flex shrink-0 rounded-md bg-white p-1.5 shadow-sm sm:p-2">
+          <Logo
+            size="compact"
+            className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          />
+        </div>
 
         <nav className="hidden flex-1 items-center justify-center lg:flex">
           {navLinks.map((link) => (
