@@ -47,8 +47,8 @@ export function SiteFooter() {
       <Container className="py-12 sm:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(4,minmax(0,1fr))]">
           <div>
-            <div className="[&_svg]:text-white [&_span]:text-white">
-              <Logo />
+            <div className="inline-flex rounded-sm bg-white p-2">
+              <Logo size="standard" />
             </div>
             <p className="mt-5 max-w-xs text-sm leading-7 text-white/80">
               Technical learning in offshore safety, process safety, piping,

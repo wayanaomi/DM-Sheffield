@@ -18,14 +18,11 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-blue-700 bg-blue text-white shadow-sm">
-      <Container className="flex min-h-16 items-center justify-between gap-5">
-        <Link
-          href="/"
-          aria-label="DM Sheffield home"
-          className="shrink-0 text-white [&_svg]:text-white [&_span]:text-white"
-        >
-          <Logo />
-        </Link>
+      <Container className="flex min-h-20 items-center justify-between gap-3 sm:gap-5">
+        <Logo
+          size="compact"
+          className="rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        />
 
         <nav className="hidden flex-1 items-center justify-center lg:flex">
           {navLinks.map((link) => (

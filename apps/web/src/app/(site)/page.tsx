@@ -93,9 +93,10 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover object-[center_45%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#071a3d]/95 via-[#071a3d]/75 to-[#071a3d]/15" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#071a3d]/95 via-[#071a3d]/80 to-[#071a3d]/30" />
+        <div className="absolute inset-x-0 top-0 z-10 h-1 bg-gradient-to-r from-blue via-white to-red-600" />
 
         <Container className="relative flex min-h-[470px] items-center py-16 sm:min-h-[540px] lg:min-h-[600px]">
           <div className="max-w-3xl text-white">
