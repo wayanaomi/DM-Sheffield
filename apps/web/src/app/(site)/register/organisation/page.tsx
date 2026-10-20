@@ -4,7 +4,7 @@ import { CorporateRegisterForm } from "./corporate-register-form";
 
 export const metadata = {
   title: "Register your organisation",
-  description: "Create an organisation account for workforce training on DM Sheffield.",
+  description: "",
 };
 
 export default function OrganisationRegisterPage() {
@@ -15,10 +15,6 @@ export default function OrganisationRegisterPage() {
         <h1 className="mt-2 text-2xl font-semibold text-navy">
           Register your organisation
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          Create your organisation account to get started with workforce training,
-          team learning and training records.
-        </p>
 
         <div className="mt-6">
           <CorporateRegisterForm />
@@ -33,7 +29,7 @@ export default function OrganisationRegisterPage() {
         <p className="mt-3 text-center text-sm text-muted">
           Registering as an individual?{" "}
           <Link href="/register" className="font-medium text-blue">
-            Create a learner account
+            Create an individual account
           </Link>
         </p>
       </div>
