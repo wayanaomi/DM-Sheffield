@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/training", label: "Training" },
   { href: "/simulator", label: "P&ID Simulator" },
   { href: "/organisations", label: "Organisations" },
+  { href: "/consultancy", label: "Consultancy" },
   { href: "/about", label: "About us" },
   { href: "/contact", label: "Contact" },
 ];

@@ -19,6 +19,7 @@ const columns = [
     links: [
       { href: "/simulator", label: "P&ID Simulator" },
       { href: "/organisations", label: "Organisational Training" },
+      { href: "/consultancy", label: "Consultancy Services" },
       { href: "/about", label: "About DM Sheffield" },
       { href: "/contact", label: "Contact us" },
     ],
